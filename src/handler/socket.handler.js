@@ -1,3 +1,5 @@
+var Message = require('../model/message.model.js');
+
 function chatSocketHandler(io, chatProvider) {
     io.on('connection', function(socket) {
         new UserSocket(io, socket, chatProvider);
