@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var phpSessionMiddleware = require('./middleware/phpsession.middleware.js');
 
 
-var connection, userProvider, chatProvider, sessionProvider;
+var connection, userProvider, chatProvider, sessionProvider, statProvider;
 
 function runApp() {
     connectDb();
@@ -33,11 +33,13 @@ function declareProvider() {
     chatProvider = new (require('./provider/chat.provider.js'))(connection);
     userProvider = new (require('./provider/user.provider'))(connection);
     sessionProvider = new (require('./provider/session.provider'))(connection);
+    statProvider = new (require('./provider/stat.provider.js'))(connection);
 }
 
 function declareHandler() {
     require('./handler/user.handler.js')(app, userProvider);
     require('./handler/socket.handler.js')(io, chatProvider);
+    require('./handler/stat.handler.js')(app, statProvider);
 }
 
 function declareMiddleware() {
