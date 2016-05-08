@@ -22,7 +22,7 @@ function UserSocket(io, socket, chatProvider) {
   }
 
   function loadInitialMessage(username) {
-    chatProvider.getLastMessage(username, (messages) => {
+    chatProvider.getLastMessage(username).then((messages) => {
       socket.emit(INIT_MSG_EVENT, messages);
     });
   }
