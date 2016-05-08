@@ -14,46 +14,50 @@ const NEW_MSG_EVENT = 'chat-new-message',
       DEL_MSG_EVENT = 'chat-delete-message';
 
 function UserSocket(io, socket, chatProvider) {
-  socket.on(USER_LOGON_EVENT, logonEvent);
-  socket.on(NEW_MSG_EVENT, messageEvent);
-  socket.on(DEL_MSG_EVENT, deleteMessageEvent);
+    socket.on(USER_LOGON_EVENT, logonEvent);
+    socket.on(NEW_MSG_EVENT, messageEvent);
+    socket.on(DEL_MSG_EVENT, deleteMessageEvent);
 
-  function logonEvent(username) {
-    socket.join(username);
-    loadInitialMessage(username);
-  }
-
-  function loadInitialMessage(username) {
-    chatProvider.getLastMessage(username).then((messages) => {
-      socket.emit(INIT_MSG_EVENT, messages);
-    });
-  }
-
-  function messageEvent(data) {
-    var message = new Message(data);
-    if(message.isPrivate()) {
-      sendPrivateMessage(message);
-    } else {
-      sendMessage(message);
+    function logonEvent(username) {
+        socket.join(username);
+        loadInitialMessage(username);
     }
-    saveMessage(message);
-  }
 
-  function deleteMessageEvent(message) {
-    io.emit(DEL_MSG_EVENT, message);
-    chatProvider.deleteMessage(message);
-  }
+    function loadInitialMessage(username) {
+        chatProvider.getLastMessage(username).then((messages) => {
+            socket.emit(INIT_MSG_EVENT, messages);
+        });
+    }
 
-  function sendPrivateMessage(message) {
-      socket.to(message.to).emit(NEW_MSG_EVENT, message);
-      socket.emit(NEW_MSG_EVENT, message);
-  }
+    function messageEvent(data) {
+        var message = new Message(data);
+        saveMessage(message).then((message) => {
+            if(message.isPrivate()) {
+                sendPrivateMessage(message);
+            } else {
+                sendMessage(message);
+            }
+        });
+    }
 
-  function sendMessage(message) {
-    io.emit(NEW_MSG_EVENT, message);
-  }
+    function deleteMessageEvent(message) {
+        io.emit(DEL_MSG_EVENT, message);
+        chatProvider.deleteMessage(message);
+    }
 
-  function saveMessage(message) {
-    chatProvider.saveMessage(message);
-  }
+    function sendPrivateMessage(message) {
+        socket.to(message.to).emit(NEW_MSG_EVENT, message);
+        socket.emit(NEW_MSG_EVENT, message);
+    }
+
+    function sendMessage(message) {
+        io.emit(NEW_MSG_EVENT, message);
+    }
+
+    function saveMessage(message) {
+        return chatProvider.saveMessage(message).then((id) => {
+            message.id = id;
+            return message;
+        });
+    }
 }

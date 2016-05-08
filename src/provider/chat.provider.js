@@ -2,7 +2,7 @@ var Message = require('../model/message.model.js');
 
 function ChatProvider(connection) {
     this.saveMessage = function(msg) {
-        return connection.query("INSERT INTO chat (message, username, to_username) VALUES (?,?,?)", [msg.text, msg.from, msg.to]);
+        return connection.query("INSERT INTO chat (message, username, to_username) VALUES (?,?,?)", [msg.text, msg.from, msg.to]).then((result) => result.insertId);
     };
 
     this.deleteMessage = function(msg) {
