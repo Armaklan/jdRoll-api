@@ -1,4 +1,5 @@
 "use strict";
 
 // Run application
-require('./src/boot.js')();
+var config = require('./config.js');
+require('./src/boot.js')(config);
