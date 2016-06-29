@@ -1,19 +1,7 @@
-function StatProvider(connection) {
-    var join = ` FROM posts
-    LEFT JOIN topics
-    ON topics.id = posts.topic_id
-    LEFT JOIN sections
-    ON sections.id = topics.section_id
-    LEFT JOIN campagne
-    ON campagne.id = sections.campagne_id`;
+function StatProvider(service) {
 
-    var queryStat = `SELECT
-            DATE_FORMAT(create_date, '%Y,%m,01') as dat,
-            count(*) as cpt` + join;
-
-    var queryGameStat = `SELECT
-            campagne.name as game,
-            count(*) as cpt` + join;
+    const sqlBuilder = service.sqlBuilder;
+    const connection = service.connection;
 
     this.byMonth = function() {
         return connection.query(`SELECT
@@ -25,34 +13,69 @@ function StatProvider(connection) {
     };
 
     this.byMonthFor = function(campagneId) {
-        return connection.query(queryStat + `
-            WHERE posts.user_id IS NOT NULL
-            AND campagne.id = ?
-            GROUP BY dat;`, [campagneId]);
+        var sql = baseQueryStat()
+            .where('posts.user_id IS NOT NULL')
+            .where('campagne.id = ?', campagneId)
+            .group('dat')
+            .toString();
+
+        return connection.query(sql);
     };
 
     this.byGame = function() {
-        return connection.query(queryGameStat + `
-            WHERE posts.user_id IS NOT NULL
-            AND campagne.statut = 0
-            OR campagne.statut IS NULL
-            GROUP BY game;`);
+        var sql = baseQueryGameStat()
+            .where('posts.user_id IS NOT NULL')
+            .where(
+                sqlBuilder.expr()
+                    .and('campagne.statut = 0')
+                    .or('campagne.statut IS NULL')
+            )
+            .group('game')
+            .toString();
+
+        return connection.query(sql);
     };
 
-    this.byUserAndGame = function(userId) {
-        return connection.query(queryGameStat + `
-            WHERE posts.user_id = ?
-            GROUP BY game;`, [userId]);
+    this.byUserAndGame = function(userId, beginDate) {
+        var query = baseQueryGameStat()
+            .where('posts.user_id = ?', userId);
+        query = beginDate ? query.where('create_date > ?', beginDate) : query;
+        query = query.group('game');
+        return connection.query(query.toString());
     };
 
-    this.byUser = function(userId) {
-        return connection.query(`SELECT
-            DATE_FORMAT(create_date, '%Y-%m-%d') as dat,
-            count(*) as cpt
-            FROM posts
-            WHERE user_id = ?
-            GROUP BY dat`, [userId]);
+    this.byUser = function(userId, beginDate) {
+        var query = sqlBuilder.select()
+            .field('DATE_FORMAT(create_date, \'%Y-%m-%d\')', 'dat')
+            .field('count(*)', 'cpt')
+            .from('posts')
+            .where('user_id = ?', userId);
+        query = beginDate ? query.where('create_date > ?', beginDate) : query;
+        query = query.group('dat');
+        return connection.query(query.toString());
     };
+
+
+    function baseQueryStat () {
+        return addFromClause(sqlBuilder
+                             .select()
+                             .field('DATE_FORMAT(create_date, \'%Y,%m,01\')', 'dat')
+                             .field('count(*)', 'cpt'));
+    }
+
+    function baseQueryGameStat() {
+        return addFromClause(sqlBuilder.select()
+                             .field('campagne.name', 'game')
+                             .field('count(*)', 'cpt'));
+    }
+
+    function addFromClause(query) {
+        return query
+            .from('posts')
+            .left_join('topics', null, "topics.id = posts.topic_id")
+            .left_join('sections', null, "sections.id = topics.section_id")
+            .left_join('campagne', null, "campagne.id = sections.campagne_id");
+    }
 }
 
 module.exports = StatProvider;

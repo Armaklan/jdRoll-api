@@ -2,6 +2,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var mysql = require('mysql');
+var squel = require('squel').useFlavour('mysql');
 var Message = require('./model/message.model.js');
 var cookieParser = require('cookie-parser');
 var phpSessionMiddleware = require('./middleware/phpsession.middleware.js');
@@ -22,11 +23,15 @@ function connectDb(dbConfig) {
 }
 
 function declareProvider(connection) {
+    var providerDependencies = {
+        connection: connection,
+        sqlBuilder: squel
+    };
     var services = {};
     services.chatProvider = importProvider('./provider/chat.provider.js', connection);
-    services.userProvider = importProvider('./provider/user.provider', connection);
-    services.sessionProvider = importProvider('./provider/session.provider', connection);
-    services.statProvider = importProvider('./provider/stat.provider.js', connection);
+    services.userProvider = importProvider('./provider/user.provider', providerDependencies);
+    services.sessionProvider = importProvider('./provider/session.provider', providerDependencies);
+    services.statProvider = importProvider('./provider/stat.provider.js', providerDependencies);
     return services;
 }
 
@@ -41,9 +46,9 @@ function declareMiddleware(app, services) {
     app.use(phpSessionMiddleware(services.sessionProvider));
 }
 
-function importProvider(path, connection) {
+function importProvider(path, dependencies) {
     var Provider = require(path);
-    return new Provider(connection);
+    return new Provider(dependencies);
 }
 
 module.exports = runApp;
