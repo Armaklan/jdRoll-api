@@ -10,7 +10,7 @@ function UserProvider(service) {
 
     this.all = function() {
         var sql = baseSql()
-            .where("user.profil > ?", 0)
+            .where("user.profil >= ?", 0)
             .where("time > DATE_SUB(now(), INTERVAL 1 MONTH)")
             .order("user.username")
             .toString();
@@ -20,7 +20,7 @@ function UserProvider(service) {
     this.connected = function() {
         var sql = baseSql()
             .where("time > DATE_SUB(now(), INTERVAL 5 MINUTE)")
-            .order("user.profil")
+            .order("user.profil", false)
             .order("user.username")
             .toString();
         return connection.query(sql).then(rowsMapper);
