@@ -1,13 +1,12 @@
-function User(data) {
-    var that = this;
+"use strict";
 
-    _build(data);
+class User {
 
-    function _build(data) {
-        that.id = data.id;
-        that.username = data.username;
-        that.profil = data.profil;
-    }
+  constructor(data) {
+    this.id = data.id;
+    this.username = data.username;
+    this.profil = data.profil;
+  }
 }
 
 module.exports = User;

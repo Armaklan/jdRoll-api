@@ -1,33 +1,36 @@
-function Message(message) {
-    var that = this;
+"use strict";
 
-    that.isPrivate = function() {
-        return that.to;
-    };
+class Message {
 
-    if(message && message.from) {
-        fromEvent(message);
-    } else {
-        fromDb(message);
+    constructor(message) {
+        if(message && message.from) {
+            this.fromEvent(message);
+        } else {
+            this.fromDb(message);
+        }
     }
 
-    function fromEvent(message) {
-        that.id = message.id;
-        that.to = message.to;
-        that.from = message.from;
-        that.text = message.text;
-        that.time = new Date();
-        that.private = that.isPrivate();
-        parseChatMsg(that);
+    isPrivate() {
+        return this.to ? true : false;
     }
 
-    function fromDb(data) {
-        that.id = data.id;
-        that.to = data.to_username;
-        that.from = data.username;
-        that.text = data.message;
-        that.time = data.time;
-        that.private = that.isPrivate();
+    fromEvent(message) {
+        this.id = message.id;
+        this.to = message.to;
+        this.from = message.from;
+        this.text = message.text;
+        this.time = new Date();
+        this.private = this.isPrivate();
+        parseChatMsg(this);
+    }
+
+    fromDb(data) {
+        this.id = data.id;
+        this.to = data.to_username;
+        this.from = data.username;
+        this.text = data.message;
+        this.time = data.time;
+        this.private = this.isPrivate();
     }
 }
 

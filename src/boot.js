@@ -32,6 +32,8 @@ function declareProvider(connection) {
     services.userProvider = importProvider('./provider/user.provider', providerDependencies);
     services.sessionProvider = importProvider('./provider/session.provider', providerDependencies);
     services.statProvider = importProvider('./provider/stat.provider.js', providerDependencies);
+    services.characterProvider = importProvider('./provider/character.provider.js', providerDependencies);
+    services.campagneProvider = importProvider('./provider/campagne.provider.js', providerDependencies);
     return services;
 }
 
@@ -39,6 +41,7 @@ function declareHandler(app, io, services) {
     require('./handler/user.handler.js')(app, services.userProvider);
     require('./handler/socket.handler.js')(io, services.chatProvider);
     require('./handler/stat.handler.js')(app, services.statProvider);
+    require('./handler/character.handler')(app, services.characterProvider, services.campagneProvider);
 }
 
 function declareMiddleware(app, services) {
