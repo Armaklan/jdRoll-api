@@ -10,7 +10,7 @@ function CharacterProvider(service) {
     this.nameWith = function(campagneId, searchText, publicOnly) {
       var query = baseSql()
         .where("personnages.campagne_id = ?", campagneId)
-        .where("personnages.name like ?", "%" + searchText + "%" );
+        .where("UPPER(personnages.name) like ?", "%" + searchText.toUpperCase() + "%" );
 
       if(publicOnly) {
         query = query.where("statut = ?", 0)
