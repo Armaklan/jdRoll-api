@@ -1,6 +1,20 @@
 "use strict";
 
-class Character {
+export default class Character {
+  id: number;
+  userId: number;
+  campagneId: number;
+  name: string;
+  concept: string;
+  avatar: string;
+  publicDescription: string;
+  privateDescription: string;
+  technical: string;
+  statut: string;
+  catId: number;
+  perso_fields: string;
+  widgets: string;
+  thumbnails: string;
 
   constructor(data) {
     this.id = data.id;
@@ -19,6 +33,4 @@ class Character {
     this.thumbnails = "/files/thumbnails/perso_" + this.id + ".png"; 
   }
 
-}
-
-module.exports = Character;
+};

@@ -1,6 +1,12 @@
 "use strict";
 
-class Message {
+export default class Message {
+    id: string;
+    to: string;
+    from: string;
+    text: string;
+    time: Date;
+    private: boolean;
 
     constructor(message) {
         if(message && message.from) {
@@ -32,10 +38,7 @@ class Message {
         this.time = data.time;
         this.private = this.isPrivate();
     }
-}
-
-module.exports = Message;
-
+};
 
 function parseChatMsg(message) {
     //On strip les tags HTML

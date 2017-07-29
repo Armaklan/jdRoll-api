@@ -1,4 +1,4 @@
-function StatHandler(app, statProvider) {
+export default function StatHandler(app, statProvider) {
     app.get('/apiv2/stats/bymonth', function(req, res) {
         statProvider
             .byMonth()
@@ -35,6 +35,4 @@ function StatHandler(app, statProvider) {
         return response.send([]);
     }
 
-}
-
-module.exports = StatHandler;
+};

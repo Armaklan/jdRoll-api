@@ -1,12 +1,10 @@
-var Message = require('../model/message.model.js');
+import Message from '../model/message.model';
 
-function chatSocketHandler(io, chatProvider) {
+export default function chatSocketHandler(io, chatProvider) {
     io.on('connection', function(socket) {
         new UserSocket(io, socket, chatProvider);
     });
 }
-
-module.exports = chatSocketHandler;
 
 const NEW_MSG_EVENT = 'chat-new-message',
       INIT_MSG_EVENT = 'chat-init-message',

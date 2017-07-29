@@ -1,4 +1,4 @@
-function UserHandler(app, userProvider) {
+export default function UserHandler(app, userProvider) {
     app.get('/apiv2/users/connected', function(req, res) {
         userProvider.connected().then((users) => {
             res.send(users);
@@ -10,6 +10,4 @@ function UserHandler(app, userProvider) {
             res.send(users);
         });
     });
-}
-
-module.exports = UserHandler;
+};

@@ -1,4 +1,4 @@
-function CharacterHandler(app, characterProvider, campagneProvider) {
+export default function CharacterHandler(app, characterProvider, campagneProvider) {
     app.get('/apiv2/character/:id', function(req, res) {
         campagneProvider.get(req.params.id).then(function(campagne) {
           var publicOnly = (campagne.mj != req.phpSession.id);
@@ -9,6 +9,4 @@ function CharacterHandler(app, characterProvider, campagneProvider) {
           res.send(err);
         });
     });
-}
-
-module.exports = CharacterHandler;
+};

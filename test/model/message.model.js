@@ -1,4 +1,4 @@
-var Message = require('../../src/model/message.model.js');
+var Message = require('../../src/model/message.model');
 var expect = require('chai').expect;
 
 describe('Message', function() {

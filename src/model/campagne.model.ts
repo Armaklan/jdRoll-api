@@ -1,6 +1,9 @@
 "use strict";
 
 class Campagne {
+  id: number;
+  mj: number;
+  
   constructor(data) {
     this.id = data.id;
     this.mj = data.mj_id;
@@ -15,4 +18,4 @@ class Character {
 
 }
 
-module.exports = Campagne;
+export default Campagne;

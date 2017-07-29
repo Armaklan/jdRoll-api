@@ -1,4 +1,4 @@
-var User = require('../../src/model/user.model.js');
+var User = require('../../src/model/user.model');
 var expect = require('chai').expect;
 
 describe('User', function() {
